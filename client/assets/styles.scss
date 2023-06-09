@@ -1,0 +1,52 @@
+@import 'primeflex/primeflex.css';
+@import 'primevue/resources/themes/lara-light-blue/theme.css';
+@import 'primevue/resources/primevue.css';
+@import 'primeicons/primeicons.css';
+
+$largeContentWidth: 1024px;
+
+html {
+  height: 100%;
+  font-size: 14px;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.layout-nav {
+  position: fixed;
+  height: 5rem;
+  z-index: 900;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background-color: var(--surface-0);
+  border-bottom: 1px solid var(--gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.layout-content {
+  display: flex;
+  min-height: 100vh;
+  justify-content: center;
+  padding: 7rem 0 0 0;
+}
+
+.layout-main {
+  width: $largeContentWidth;
+}
+
+.p-menubar {
+  width: $largeContentWidth;
+  border: 0;
+  background-color: transparent;
+}

@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model brandText {
+  brandId Int      @map("brand_id")
+  langId  Int      @map("lang_id")
+  text    String
+  brand   Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  lang    Language @relation(fields: [langId], references: [id], onDelete: Cascade)
+
+  @@id([brandId, langId])
+  @@map("brand_text")
+}
+
+model Brand {
+  id        Int         @id @default(dbgenerated("unique_random_id(8, 'brands'::text, 'id'::text)"))
+  countryId Int         @map("country_id")
+  brandText brandText[] 
+  country   Country     @relation(fields: [countryId], references: [id], onDelete: Cascade, map: "brands_country_fkey")
+  pencils   Pencil[]
+
+  @@map("brands")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model comboPencil {
+  comboId  Int @map("combo_id")
+  pencilId Int @map("pencil_id")
+  combos    Combo  @relation(fields: [comboId], references: [id], onDelete: Cascade)
+  pencils   Pencil @relation(fields: [pencilId], references: [id], onDelete: Cascade)
+
+  @@map("combo_pencil")
+  @@id([comboId, pencilId])
+}
+
+model Combo {
+  id           Int            @id @default(dbgenerated("unique_random_id(12, 'combos'::text, 'id'::text)"))
+  userId      Int            @unique(map: "combos_username_key") @map("user_id")
+  title        String
+  image        String?
+  description  String?
+  dateCreated DateTime       @default(now()) @db.Timestamp(6) @map("date_created")
+  dateUpdated DateTime?      @db.Timestamp(6) @map("date_updated")
+  pencils comboPencil[]
+  favorites    Favorite[]
+
+  @@map("combos")
+}
+
+model Country {
+  id          Int           @id @default(autoincrement())
+  code        String?       @db.VarChar(2)
+  brands      Brand[]
+  countryText countryText[]
+
+  @@map("countries")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model countryText {
+  countryId Int  @map("country_id")
+  langId    Int @map("lang_id")
+  text       String
+  countries  Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  languages  Language @relation(fields: [langId], references: [id], onDelete: Cascade)
+
+  @@id([countryId, langId])
+  @@map("country_text")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model Favorite {
+  comboId Int @map("combo_id")
+  userId  Int @map("user_id")
+  combo   Combo @relation(fields: [comboId], references: [id], onDelete: Cascade)
+
+  @@map("favorites")
+  @@id([comboId, userId])
+}
+
+model Language {
+  id           Int           @id @default(autoincrement())
+  code         String?       @db.VarChar(2)
+  brandText    brandText[]   
+  colorText   colorText[] 
+  countryText countryText[] 
+
+  @@map("languages")
+}
+
+model Pencil {
+  id           Int            @id @default(dbgenerated("unique_random_id(10, 'pencils'::text, 'id'::text)"))
+  brandId     Int  @map("brand_id")
+  code         String?
+  color        Int[] @ignore
+  combos comboPencil[]
+  colors pencilColor[]
+  brands       Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade, map: "pencils_brand_fkey")
+
+  @@map("pencils")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model colorText {
+  colorId  Int @map("color_id")
+  langId   Int @map("lang_id")
+  text      String
+  colors    Color   @relation(fields: [colorId], references: [id], onDelete: Cascade)
+  languages Language @relation(fields: [langId], references: [id], onDelete: Cascade)
+
+  @@map("color_text")
+  @@id([colorId, langId])
+}
+
+model Color {
+  id           Int            @id @default(dbgenerated("unique_random_id(3, 'colors'::text, 'id'::text)"))
+  order        Int?           @unique
+  colorText   colorText[]
+  pencils pencilColor[]
+
+  @@map("colors")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model pencilColor {
+  pencilId Int @map("pencil_id")
+  colorId  Int @map("color_id")
+  colors    Color  @relation(fields: [colorId], references: [id], onDelete: Cascade)
+  pencils   Pencil @relation(fields: [pencilId], references: [id], onDelete: Cascade)
+
+  @@map("pencil_color")
+  @@id([pencilId, colorId])
+}
